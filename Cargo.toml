@@ -1,7 +1,15 @@
 [package]
 authors = ["Alexander Thaller <alexander.thaller@trivago.com>"]
-name = "bench-rs"
-version = "0.1.0"
+name = "bench"
+version = "1.0.0"
+license = "MIT"
+readme = "README.md"
+description = """
+Run a program, measure execution time and print statistics.
+"""
+documentation = "https://github.com/AlexanderThaller/bench-rs"
+homepage = "https://github.com/AlexanderThaller/bench-rs"
+repository = "https://github.com/AlexanderThaller/bench-rs"
 
 [dependencies]
 criterion = "0.1"
