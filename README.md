@@ -4,7 +4,7 @@ Benchmark command line commands inspired by [bench](https://github.com/Gabriel43
 ## Install
 
 ```
-cargo install bench-rs
+cargo install bench
 ```
 
 ## CLI Help
