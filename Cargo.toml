@@ -1,0 +1,7 @@
+[package]
+authors = ["Alexander Thaller <alexander.thaller@trivago.com>"]
+name = "bench-rs"
+version = "0.1.0"
+
+[dependencies]
+criterion = "0.1.0"
