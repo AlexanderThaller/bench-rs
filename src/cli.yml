@@ -1,0 +1,34 @@
+name: 'bench'
+author: 'Alexander Thaller <alexander@thaller.ws>'
+about: 'Run a program, measure execution time and print statistics.'
+global_settings:
+  - 'ColoredHelp'
+  - 'GlobalVersion'
+  - 'NextLineHelp'
+  - 'TrailingVarArg'
+args:
+    - log_level:
+        help: "loglevel to run under"
+        short: "l"
+        long: "loglevel"
+        takes_value: true
+        value_name: "level"
+        possible_values: [ "trace", "debug", "info", "warn", "error" ]
+        default_value: "info"
+    - sample_size:
+        default_value: '100'
+        help: 'how many samples to take'
+        short: 's'
+        long: 'sample_size'
+        takes_value: true
+        value_name: 'count'
+    - id:
+        help: 'id to save benchmark under. defaults to command value'
+        short: 'd'
+        long: 'id'
+        takes_value: true
+        value_name: 'id'
+    - command:
+        required: true
+        multiple: true
+        use_delimiter: false

@@ -4,4 +4,10 @@ name = "bench-rs"
 version = "0.1.0"
 
 [dependencies]
-criterion = "0.1.0"
+criterion = "0.1"
+log = "0.3"
+loggerv = "0.6"
+
+[dependencies.clap]
+features = ["yaml"]
+version = "2.28"

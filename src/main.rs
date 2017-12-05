@@ -1,24 +1,44 @@
+#[macro_use]
+extern crate log;
+extern crate loggerv;
+
+#[macro_use]
+extern crate clap;
 extern crate criterion;
 
+use clap::App;
 use criterion::Criterion;
-use std::env;
 use std::process::Command;
 
 fn main() {
-    let mut args = env::args();
-    args.next();
+    let yaml = load_yaml!("cli.yml");
+    let matches = App::from_yaml(yaml).version(crate_version!()).get_matches();
+    {
+        let loglevel = value_t!(matches, "log_level", log::LogLevel).unwrap();
+        loggerv::init_with_level(loglevel).expect("can not initialize logger with parsed loglevel");
+    }
+    trace!("matches: {:#?}", matches);
 
-    let command_name = args.next().unwrap();
-    let command_args: Vec<_> = args.map(|x| x.into()).collect();
+    let (command_name, command_args, sample_size) = {
+        let mut command = matches.values_of("command").unwrap();
+        (
+            command.next().unwrap(),
+            command.map(|x| x.into()).collect::<Vec<String>>(),
+            value_t!(matches, "sample_size", usize).unwrap(),
+        )
+    };
 
-    Criterion::default().sample_size(10).bench_function(
-        format!("{} {}", command_name, command_args.join(" ")).as_str(),
-        |b| {
-            b.iter(|| {
-                create_command(command_name.as_str(), &command_args).output()
-            })
-        },
-    );
+    let id = if matches.is_present("id") {
+        matches.value_of("id").unwrap().into()
+    } else {
+        format!("{} {}", command_name, command_args.join(" "))
+    };
+
+    Criterion::default()
+        .sample_size(sample_size)
+        .bench_function(id.as_str(), |b| {
+            b.iter(|| create_command(command_name, &command_args).output())
+        });
 }
 
 fn create_command(name: &str, args: &[String]) -> Command {
