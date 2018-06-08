@@ -1,6 +1,7 @@
+extern crate failure;
 #[macro_use]
 extern crate log;
-extern crate loggerv;
+extern crate simplelog;
 
 #[macro_use]
 extern crate clap;
@@ -8,14 +9,32 @@ extern crate criterion;
 
 use clap::App;
 use criterion::Criterion;
+use failure::Error;
 use std::process::Command;
 
 fn main() {
+    if let Err(e) = run() {
+        for cause in e.causes() {
+            error!("{}", cause);
+        }
+
+        trace!("backtrace:\n{}", e.backtrace());
+
+        ::std::process::exit(1);
+    }
+}
+
+fn run() -> Result<(), Error> {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from_yaml(yaml).version(crate_version!()).get_matches();
+    // setup logging
     {
-        let loglevel = value_t!(matches, "log_level", log::LogLevel).unwrap();
-        loggerv::init_with_level(loglevel).expect("can not initialize logger with parsed loglevel");
+        use simplelog::*;
+
+        TermLogger::init(
+            value_t!(matches, "log_level", LogLevelFilter)?,
+            Config::default(),
+        )?;
     }
     trace!("matches: {:#?}", matches);
 
@@ -39,6 +58,8 @@ fn main() {
         .bench_function(id.as_str(), |b| {
             b.iter(|| create_command(command_name, &command_args).output())
         });
+
+    Ok(())
 }
 
 fn create_command(name: &str, args: &[String]) -> Command {
