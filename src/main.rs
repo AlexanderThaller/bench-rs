@@ -1,20 +1,27 @@
-extern crate failure;
-#[macro_use]
-extern crate log;
-extern crate simplelog;
-
-#[macro_use]
-extern crate clap;
-extern crate criterion;
-
-use clap::App;
+use clap::{
+    crate_version,
+    load_yaml,
+    value_t,
+    App,
+};
 use criterion::Criterion;
 use failure::Error;
+use log::{
+    error,
+    trace,
+};
+use simplelog::{
+    ColorChoice,
+    Config as LogConfig,
+    LevelFilter,
+    TermLogger,
+    TerminalMode,
+};
 use std::process::Command;
 
 fn main() {
     if let Err(e) = run() {
-        for cause in e.causes() {
+        for cause in e.iter_chain() {
             error!("{}", cause);
         }
 
@@ -27,15 +34,13 @@ fn main() {
 fn run() -> Result<(), Error> {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from_yaml(yaml).version(crate_version!()).get_matches();
-    // setup logging
-    {
-        use simplelog::*;
+    TermLogger::init(
+        value_t!(matches, "log_level", LevelFilter)?,
+        LogConfig::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    )?;
 
-        TermLogger::init(
-            value_t!(matches, "log_level", LogLevelFilter)?,
-            Config::default(),
-        )?;
-    }
     trace!("matches: {:#?}", matches);
 
     let (command_name, command_args, sample_size) = {
