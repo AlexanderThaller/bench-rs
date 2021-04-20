@@ -10,13 +10,14 @@ Run a program, measure execution time and print statistics.
 documentation = "https://github.com/AlexanderThaller/bench-rs"
 homepage = "https://github.com/AlexanderThaller/bench-rs"
 repository = "https://github.com/AlexanderThaller/bench-rs"
+edition = "2018"
 
 [dependencies]
-criterion = "0.2"
+criterion = "0.3"
 failure = "0.1"
 log = "0.4"
-simplelog = "0.4"
+simplelog = "0.10"
 
 [dependencies.clap]
 features = ["yaml"]
-version = "2.29.3"
+version = "2"
