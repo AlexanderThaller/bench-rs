@@ -1,20 +1,21 @@
-extern crate failure;
-#[macro_use]
-extern crate log;
-extern crate simplelog;
-
-#[macro_use]
-extern crate clap;
-extern crate criterion;
-
+use clap::crate_version;
+use clap::load_yaml;
+use clap::value_t;
 use clap::App;
 use criterion::Criterion;
 use failure::Error;
+use log::error;
+use log::trace;
+use simplelog::ColorChoice;
+use simplelog::Config as LogConfig;
+use simplelog::LevelFilter;
+use simplelog::TermLogger;
+use simplelog::TerminalMode;
 use std::process::Command;
 
 fn main() {
     if let Err(e) = run() {
-        for cause in e.causes() {
+        for cause in e.iter_chain() {
             error!("{}", cause);
         }
 
@@ -27,15 +28,13 @@ fn main() {
 fn run() -> Result<(), Error> {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from_yaml(yaml).version(crate_version!()).get_matches();
-    // setup logging
-    {
-        use simplelog::*;
+    TermLogger::init(
+        value_t!(matches, "log_level", LevelFilter)?,
+        LogConfig::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    )?;
 
-        TermLogger::init(
-            value_t!(matches, "log_level", LogLevelFilter)?,
-            Config::default(),
-        )?;
-    }
     trace!("matches: {:#?}", matches);
 
     let (command_name, command_args, sample_size) = {
@@ -55,9 +54,7 @@ fn run() -> Result<(), Error> {
 
     Criterion::default()
         .sample_size(sample_size)
-        .bench_function(id.as_str(), |b| {
-            b.iter(|| create_command(command_name, &command_args).output())
-        });
+        .bench_function(id.as_str(), |b| b.iter(|| create_command(command_name, &command_args).output()));
 
     Ok(())
 }
