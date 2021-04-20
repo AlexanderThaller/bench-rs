@@ -3,10 +3,10 @@ Benchmark command line commands inspired by [bench](https://github.com/Gabriel43
 
 ## Install
 
-Needs nightly right now. To install bench-rs just run the following command:
+To install bench-rs just run the following command:
 
 ```
-cargo +nightly install bench
+cargo install bench
 ```
 
 ## CLI Help
