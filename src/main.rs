@@ -1,16 +1,22 @@
-use clap::crate_version;
-use clap::load_yaml;
-use clap::value_t;
-use clap::App;
+use clap::{
+    crate_version,
+    load_yaml,
+    value_t,
+    App,
+};
 use criterion::Criterion;
 use failure::Error;
-use log::error;
-use log::trace;
-use simplelog::ColorChoice;
-use simplelog::Config as LogConfig;
-use simplelog::LevelFilter;
-use simplelog::TermLogger;
-use simplelog::TerminalMode;
+use log::{
+    error,
+    trace,
+};
+use simplelog::{
+    ColorChoice,
+    Config as LogConfig,
+    LevelFilter,
+    TermLogger,
+    TerminalMode,
+};
 use std::process::Command;
 
 fn main() {
@@ -54,7 +60,9 @@ fn run() -> Result<(), Error> {
 
     Criterion::default()
         .sample_size(sample_size)
-        .bench_function(id.as_str(), |b| b.iter(|| create_command(command_name, &command_args).output()));
+        .bench_function(id.as_str(), |b| {
+            b.iter(|| create_command(command_name, &command_args).output())
+        });
 
     Ok(())
 }
