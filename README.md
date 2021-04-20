@@ -11,7 +11,7 @@ cargo install bench
 
 ## CLI Help
 ```
-bench 1.0.0
+bench 1.1.0
 Alexander Thaller <alexander@thaller.ws>
 Run a program, measure execution time and print statistics.
 
